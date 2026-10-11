@@ -25,10 +25,13 @@ yarn-error.log*
 Thumbs.db
 ehthumbs.db
 
-# Android/Gradle specific
+# Android/Gradle specific (Keeping gradlew and wrapper tracked for CI/CD)
 android/.gradle
 android/app/build/
 android/build/
 *.iml
 .idea/
+android/local.properties
+.expo/
+.metro-health-check*
 
