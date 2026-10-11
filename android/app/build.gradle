@@ -1,3 +1,4 @@
+android/app/build.gradle
 import org.apache.tools.ant.taskdefs.condition.Os
 
 apply plugin: "com.android.application"
@@ -5,11 +6,11 @@ apply plugin: "org.jetbrains.kotlin.android"
 apply plugin: "com.facebook.react"
 
 react {
-    entryFile = "index.js"
+    entryFile = file("index.js")
 }
 
 def enableHermes = project.ext.react.get("enableHermes", false)
-def enableNewArch = false // Must false for sqlite-storage + tts
+def enableNewArch = false
 
 android {
     ndkVersion rootProject.ext.ndkVersion
@@ -19,11 +20,10 @@ android {
     namespace "com.wordlearning.app"
     defaultConfig {
         applicationId "com.wordlearning.app"
-        minSdkVersion rootProject.ext.minSdkVersion // 24
-        targetSdkVersion rootProject.ext.targetSdkVersion // 34
+        minSdkVersion rootProject.ext.minSdkVersion
+        targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
         versionName "1.0.0"
-        // Short name: শব্দ
         resValue "string", "app_name", "শব্দ"
     }
 
@@ -34,14 +34,6 @@ android {
             keyAlias 'androiddebugkey'
             keyPassword 'android'
         }
-        release {
-            if (project.hasProperty('MYAPP_UPLOAD_STORE_FILE')) {
-                storeFile file(MYAPP_UPLOAD_STORE_FILE)
-                storePassword MYAPP_UPLOAD_STORE_PASSWORD
-                keyAlias MYAPP_UPLOAD_KEY_ALIAS
-                keyPassword MYAPP_UPLOAD_KEY_PASSWORD
-            }
-        }
     }
 
     buildTypes {
@@ -49,15 +41,13 @@ android {
             signingConfig signingConfigs.debug
         }
         release {
-            signingConfig signingConfigs.debug // For APK testing, use debug keystore
+            signingConfig signingConfigs.debug
             minifyEnabled false
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
-            // Hermes + No New Arch = Perfect for MMKV + SQLite + TTS
             hermesEnabled true
         }
     }
 
-    // Fix for vector icons + tts
     packagingOptions {
         pickFirst '**/libjsc.so'
         pickFirst '**/libc++_shared.so'
@@ -68,18 +58,6 @@ dependencies {
     implementation fileTree(dir: "libs", include: ["*.jar"])
     implementation "com.facebook.react:react-native:+"
     implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.0.0"
-    debugImplementation "com.facebook.flipper:flipper:${FLIPPER_VERSION}"
-    debugImplementation "com.facebook.flipper:flipper-network-plugin:${FLIPPER_VERSION}" {
-        exclude group:'com.squareup.okhttp3', module:'okhttp'
-    }
-    debugImplementation "com.facebook.flipper:flipper-fresco-plugin:${FLIPPER_VERSION}"
-    if (enableHermes) {
-        def hermesPath = "../../node_modules/hermes-engine/"
-        debugImplementation files(hermesPath + "android/hermes-debug.aar")
-        releaseImplementation files(hermesPath + "android/hermes-release.aar")
-    } else {
-        implementation jscFlavor
-    }
 }
 
 apply from: file("../../node_modules/@react-native-community/cli-platform-android/native_modules.gradle")
