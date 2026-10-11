@@ -1,0 +1,4 @@
+<layer-list>
+  <item android:drawable="@color/white" />
+  <item android:drawable="@drawable/splash_logo" android:gravity="center" />
+</layer-list>
