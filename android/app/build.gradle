@@ -2,107 +2,25 @@ apply plugin: "com.android.application"
 apply plugin: "org.jetbrains.kotlin.android"
 apply plugin: "com.facebook.react"
 
-import org.apache.tools.ant.taskdefs.condition.Os
-
-react {
-    /* 
-     * No entryFile here - RN 0.73.6 uses autolinking
-     * Setting entryFile causes "Operation is not supported for read-only collection"
-     * Keep this block empty - it's required but read-only in new plugin
-     */
-}
-
-def enableHermes = project.ext.react.get("enableHermes", false)
-def enableNewArch = false
-
-def reactNativeArchitectures() {
-    def value = project.getProperties().get("reactNativeArchitectures")
-    return value ? value.split(",") : ["armeabi-v7a", "x86", "x86_64", "arm64-v8a"]
-}
-
 android {
-    ndkVersion rootProject.ext.ndkVersion
-    buildToolsVersion rootProject.ext.buildToolsVersion
+    namespace "com.wordlearning"
     compileSdkVersion rootProject.ext.compileSdkVersion
 
-    namespace "com.wordlearning.app"
     defaultConfig {
-        applicationId "com.wordlearning.app"
+        applicationId "com.wordlearning"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
-        versionName "1.0.0"
-        // Short name - শব্দ
-        resValue "string", "app_name", "শব্দ"
-        // Or if unicode fails, use English short
-        // resValue "string", "app_name", "Shobdo"
-    }
-
-    signingConfigs {
-        debug {
-            storeFile file('debug.keystore')
-            storePassword 'android'
-            keyAlias 'androiddebugkey'
-            keyPassword 'android'
-        }
-        release {
-            if (project.hasProperty('MYAPP_UPLOAD_STORE_FILE')) {
-                storeFile file(MYAPP_UPLOAD_STORE_FILE)
-                storePassword MYAPP_UPLOAD_STORE_PASSWORD
-                keyAlias MYAPP_UPLOAD_KEY_ALIAS
-                keyPassword MYAPP_UPLOAD_KEY_PASSWORD
-            } else {
-                // For GitHub Actions APK testing - uses debug keystore
-                storeFile file('debug.keystore')
-                storePassword 'android'
-                keyAlias 'androiddebugkey'
-                keyPassword 'android'
-            }
-        }
+        versionName "1.0"
     }
 
     buildTypes {
-        debug {
+        release {
             signingConfig signingConfigs.debug
         }
-        release {
-            signingConfig signingConfigs.release
-            minifyEnabled false
-            proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
-            // Hermes enabled for MMKV + TTS performance
-            debuggable false
-            jniDebuggable false
-        }
-    }
-
-    packagingOptions {
-        pickFirst '**/libjsc.so'
-        pickFirst '**/libc++_shared.so'
     }
 }
 
 dependencies {
-    implementation fileTree(dir: "libs", include: ["*.jar"])
-    implementation "com.facebook.react:react-native:+"
-    implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.0.0"
-    
-    debugImplementation "com.facebook.flipper:flipper:${FLIPPER_VERSION}"
-    debugImplementation "com.facebook.flipper:flipper-network-plugin:${FLIPPER_VERSION}" {
-        exclude group:'com.squareup.okhttp3', module:'okhttp'
-    }
-    debugImplementation "com.facebook.flipper:flipper-fresco-plugin:${FLIPPER_VERSION}"
-
-    if (enableHermes) {
-        def hermesPath = "../../node_modules/hermes-engine/"
-        debugImplementation files(hermesPath + "android/hermes-debug.aar")
-        releaseImplementation files(hermesPath + "android/hermes-release.aar")
-    } else {
-        implementation jscFlavor
-    }
+    implementation("com.facebook.react:react-android")
 }
-
-apply from: file("../../node_modules/@react-native-community/cli-platform-android/native_modules.gradle")
-applyNativeModulesAppBuildGradle(project)
-
-def reactNativeDir = file("../../node_modules/react-native")
-def reactNativeVersion = file("../../node_modules/react-native/package.json").text.contains('"version": "0.73')
