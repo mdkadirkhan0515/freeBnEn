@@ -8,6 +8,7 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
@@ -24,9 +25,6 @@ jobs:
           node-version: '18'
           cache: 'npm'
 
-      - name: Setup Android SDK
-        uses: android-actions/setup-android@v3
-
       - name: Install Dependencies
         run: npm install --legacy-peer-deps
 
@@ -39,6 +37,8 @@ jobs:
             android/.gradle
             android/app/build
           key: ${{ runner.os }}-gradle-${{ hashFiles('android/gradle/wrapper/gradle-wrapper.properties', 'android/build.gradle', 'android/app/build.gradle') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
 
       - name: Make Gradlew Executable
         run: chmod +x android/gradlew
@@ -48,7 +48,7 @@ jobs:
           cd android
           ./gradlew clean
 
-      - name: Build Release APK - word (Android Only)
+      - name: Build Release APK - শব্দ (Android Only)
         run: |
           cd android
           ./gradlew assembleRelease --no-daemon --stacktrace
@@ -58,7 +58,7 @@ jobs:
       - name: Check APK Output
         run: |
           ls -lh android/app/build/outputs/apk/release/
-          echo "APK Generated: word - com.wordlearning.app"
+          echo "APK Generated: শব্দ - com.wordlearning.app"
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
@@ -66,4 +66,4 @@ jobs:
           name: app-release
           path: android/app/build/outputs/apk/release/app-release.apk
           retention-days: 30
-          
+          if-no-files-found: error
