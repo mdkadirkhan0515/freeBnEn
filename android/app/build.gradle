@@ -1,6 +1,3 @@
-android/app/build.gradle
-import org.apache.tools.ant.taskdefs.condition.Os
-
 apply plugin: "com.android.application"
 apply plugin: "org.jetbrains.kotlin.android"
 apply plugin: "com.facebook.react"
@@ -9,15 +6,10 @@ react {
     entryFile = file("index.js")
 }
 
-def enableHermes = project.ext.react.get("enableHermes", false)
-def enableNewArch = false
-
 android {
-    ndkVersion rootProject.ext.ndkVersion
-    buildToolsVersion rootProject.ext.buildToolsVersion
+    namespace "com.wordlearning.app"
     compileSdkVersion rootProject.ext.compileSdkVersion
 
-    namespace "com.wordlearning.app"
     defaultConfig {
         applicationId "com.wordlearning.app"
         minSdkVersion rootProject.ext.minSdkVersion
@@ -37,27 +29,16 @@ android {
     }
 
     buildTypes {
-        debug {
-            signingConfig signingConfigs.debug
-        }
         release {
             signingConfig signingConfigs.debug
             minifyEnabled false
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
-            hermesEnabled true
         }
-    }
-
-    packagingOptions {
-        pickFirst '**/libjsc.so'
-        pickFirst '**/libc++_shared.so'
     }
 }
 
 dependencies {
-    implementation fileTree(dir: "libs", include: ["*.jar"])
-    implementation "com.facebook.react:react-native:+"
-    implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.0.0"
+    implementation("com.facebook.react:react-android")
 }
 
 apply from: file("../../node_modules/@react-native-community/cli-platform-android/native_modules.gradle")
