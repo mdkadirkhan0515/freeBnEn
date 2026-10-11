@@ -48,7 +48,7 @@ jobs:
           cd android
           ./gradlew clean
 
-      - name: Build Release APK - শব্দ (Android Only)
+      - name: Build Release APK - word (Android Only)
         run: |
           cd android
           ./gradlew assembleRelease --no-daemon --stacktrace
@@ -58,7 +58,7 @@ jobs:
       - name: Check APK Output
         run: |
           ls -lh android/app/build/outputs/apk/release/
-          echo "APK Generated: শব্দ - com.wordlearning.app"
+          echo "APK Generated: word - com.wordlearning.app"
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
